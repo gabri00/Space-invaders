@@ -7,8 +7,8 @@ import obstacle
 class Game:
 	def __init__(self):
 		player_sprite = Player((WIDTH / 2, HEIGHT), WIDTH, 5)
-		self.player = pygame.sprite.GroupSingle(player_sprite)
-
+		self.player = pygame.sprite.GroupSingle(player_sprite) # GroupSingle is a class that contains only one sprite.
+															   # When one more is added the last will be deleted
 		self.shape = obstacle.shape
 		self.block_size = 6
 		self.blocks = pygame.sprite.Group()
