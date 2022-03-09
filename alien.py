@@ -9,3 +9,6 @@ class Alien(pygame.sprite.Sprite):
 		self.image = pygame.image.load(file_path)
 		
 		self.rect = self.image.get_rect(topleft = (x,y))
+
+	def update(self,speed):
+		self.rect.x += speed
