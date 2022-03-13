@@ -55,10 +55,36 @@ class Game:
 			if alien.rect.right >= WIDTH - 100:
 				self.alien_direction = -1
 
+	def alien_move_down(self, dist):
+		pass
+
+	def alien_shoot(self):
+		pass
+
+	def extra_alien_timer(self):
+		pass
+
+	def check_collisions(self):
+		#player lasers
+		if self.player.sprite.lasers:
+			for laser in self.player.sprite.lasers:
+				# obstacle collisions
+				if pygame.sprite.spritecollide(laser, self.block, True):
+					laser.kill()
+
+				# alien collisions
+				if pygame.sprite.spritecollide(laser, self.aliens, True):
+					laser.kill()
+
+				# extra collisions
+				if pygame.sprite.spritecollide(laser, self.extra, True):
+					laser.kill()
+
 	def run(self):
 		self.player.update()
 		self.aliens.update(self.aliens.speed)
 		self.alien_position_checker()
+		self.check_collisions()
 
 		self.player.sprite.lasers.draw(window)
 		self.player.draw(window)
