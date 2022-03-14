@@ -10,5 +10,13 @@ class Alien(pygame.sprite.Sprite):
 		
 		self.rect = self.image.get_rect(topleft = (x,y))
 
+		if type == 'A':
+			self.value = 100
+		elif type == 'B':
+			self.value = 200
+		else:
+			self.value = 300
+
+
 	def update(self,speed):
 		self.rect.x += speed
