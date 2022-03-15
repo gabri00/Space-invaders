@@ -4,7 +4,9 @@ import sys
 
 from player import Player
 import obstacle
-from alien import Alien
+from alien import Alien, Extra
+from random import choice, randint
+from laser import Laser
 
 class Game:
 	def __init__(self):
@@ -23,7 +25,12 @@ class Game:
 		# Alien setup 
 		self.aliens = pygame.sprite.Group()
 		self.aliens_setup(rows = 6, cols = 8) # number of alien that we will have
-		self.aliens.speed = 1
+		self.alien_direction = 1
+		self.alien_lasers = pygame.sprite.Group()
+
+		#Extra setup
+		self.extra = pygame.sprite.GroupSingle()
+		self.extra_spown_time = randint(40,80)
 
 	def create_obstacle(self, x_start, y_start, offset_x):
 		for i, row in enumerate(self.shape):
@@ -38,7 +45,7 @@ class Game:
 		for x in offset:
 			self.create_obstacle(x_start, y_start, x)
 
-	def aliens_setup(self,rows,cols, x_distance = 60, y_distance = 48, x_offset = 70, y_offset = 100):
+	def aliens_setup(self,rows,cols, x_distance = 60, y_distance = 48, x_offset = 70, y_offset = 20):
 		for i, row in enumerate(range(rows)):
 			for j, col in enumerate(range(cols)):
 				x = j * x_distance + x_offset
@@ -52,18 +59,45 @@ class Game:
 	def alien_position_checker(self):
 		all_aliens = self.aliens.sprites()
 		for alien in all_aliens:
-			if alien.rect.right >= WIDTH - 100:
+			if alien.rect.right >= WIDTH:
 				self.alien_direction = -1
+				self.alien_move__down(1)
+			elif alien.rect.left <= 0:
+				self.alien_direction = 1
+				self.alien_move__down(1)
+
+	def alien_move__down(self,distance):
+		if self.aliens:
+			for alien in self.aliens.sprites():
+				alien.rect.y += distance
+	
+	def alien_shoot(self):
+		if self.aliens.sprites():
+			random_alien = choice(self.aliens.sprites())
+			laser_sprite = Laser(random_alien.rect.center, 6, HEIGHT)
+			self.alien_lasers.add(laser_sprite)
+
+	def extra_alien_timer(self):
+		self.extra_spown_time -=1
+		if self.extra_spown_time <= 0:
+			self.extra.add(Extra(choice(['right', 'left']),WIDTH))
+			self.extra_spown_time = randint(400,800)
 
 	def run(self):
 		self.player.update()
-		self.aliens.update(self.aliens.speed)
+		self.aliens.update(self.alien_direction)
 		self.alien_position_checker()
+		self.alien_lasers.update()
+		self.extra_alien_timer()
+		self.extra.update()
 
 		self.player.sprite.lasers.draw(window)
 		self.player.draw(window)
+
 		self.blocks.draw(window)
 		self.aliens.draw(window)
+		self.alien_lasers.draw(window)
+		self.extra.draw(window)
 
 
 
@@ -74,11 +108,16 @@ if __name__ == '__main__':
 	clock = pygame.time.Clock()
 	game = Game()
 
+	ALIENLASER = pygame.USEREVENT + 1
+	pygame.time.set_timer(ALIENLASER,800) # the time every shoot from aliens is 800 millisecond
+
 	while True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit()
+			if event.type == ALIENLASER:
+				game.alien_shoot()
 
 		window.fill((30, 30, 30))
 
