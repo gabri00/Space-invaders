@@ -1,4 +1,5 @@
 import pygame
+from config import *
 from laser import Laser
 
 class Player(pygame.sprite.Sprite):
@@ -37,7 +38,7 @@ class Player(pygame.sprite.Sprite):
 
 
 	def shoot(self):
-		self.lasers.add(Laser(self.rect.center, -8, self.rect.bottom))
+		self.lasers.add(Laser(self.rect.center, -8, self.rect.bottom, 'green'))
 
 	def update(self):
 		self.move()

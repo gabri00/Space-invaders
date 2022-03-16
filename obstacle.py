@@ -1,5 +1,7 @@
 import pygame
 
+from config import *
+
 class Block(pygame.sprite.Sprite):
 	def __init__(self, size, color, x, y):
 		super().__init__()

@@ -2,36 +2,38 @@ from re import X
 import pygame
 import sys
 
+from config import *
 from player import Player
 import obstacle
-from alien import Alien
+from alien import Alien, Extra
+from random import choice, randint
+from laser import Laser
 
 class Game:
 	def __init__(self):
 		# Player setup
 		player_sprite = Player((WIDTH / 2, HEIGHT), WIDTH, 5)
-		self.player = pygame.sprite.GroupSingle(player_sprite) # GroupSingle is a class that contains only one sprite.
-															   # When one more is added the last will be deleted
+		self.player = pygame.sprite.GroupSingle(player_sprite) # GroupSingle -> contains only one sprite, when a new one is added the last will be deleted
 		
 		# health and score setup
-		self.lives = 3
-		self.live_surf = pygame.image.load('images/ship.png').convert_alpha()
-		self.live_x_start_pos = screen_width - (self.live_surf.get_size()[0] * 2 + 20)
+		self.lives = MAX_LIVES
+		self.life_surf = pygame.image.load(SHIP_IMG).convert_alpha()
+		self.life_x_start_pos = WIDTH - (self.life_surf.get_size()[0] * 2 + 20)
 		self.score = 0
-		self.font = pygame.font.Font('fonts/unifont.ttf', 20)
+		self.font = pygame.font.Font(FONT, 20)
 
 		# Obstacle setup
 		self.shape = obstacle.shape
-		self.block_size = 6
+		self.block_size = BLOCK_SIZE
 		self.blocks = pygame.sprite.Group()
-		self.obstacle_amount = 4
+		self.obstacle_amount = BLOCK_AMOUNT
 		self.obstacle_x_positions = [num * (WIDTH / self.obstacle_amount) for num in range(self.obstacle_amount)]
 		self.create_obstacle_grid(*self.obstacle_x_positions, x_start = WIDTH / 15, y_start = 480)
 
 		# Alien setup 
 		self.aliens = pygame.sprite.Group()
-		self.aliens_setup(rows = 6, cols = 8) # number of alien that we will have
-		self.aliens.speed = 1
+		self.aliens_setup(rows = ALIENS_GRID['rows'], cols = ALIENS_GRID['cols']) # number of alien that we will have
+		self.aliens.speed = ALIENS_SPEED
 
 	def create_obstacle(self, x_start, y_start, offset_x):
 		for i, row in enumerate(self.shape):
@@ -39,7 +41,7 @@ class Game:
 				if col == 'x':
 					x = x_start + j * self.block_size + offset_x
 					y = y_start + i * self.block_size
-					block = obstacle.Block(self.block_size, (241, 79, 80), x, y)
+					block = obstacle.Block(self.block_size, BLOCK_COLOR, x, y)
 					self.blocks.add(block)
 
 	def create_obstacle_grid(self, *offset, x_start, y_start):
@@ -89,7 +91,7 @@ class Game:
 
 				# extra collisions
 				if pygame.sprite.spritecollide(laser, self.extra, True):
-					self.score += 500
+					self.score += EXTRA_SCORE
 					laser.kill()
 
 		# alien lasers
@@ -116,12 +118,12 @@ class Game:
 					sys.exit()
 
 	def display_lives(self):
-		for live in range(self.lives - 1):
-			x = self.live_x_start_pos + (live * (self.live_surf.get_size()[0] + 10))
-			window.blit(self.live_surf, (x, 8))
+		for life in range(self.lives - 1):
+			x = self.life_x_start_pos + (life * (self.life_surf.get_size()[0] + 10))
+			window.blit(self.life_surf, (x, 8))
 
 	def display_score(self):
-		score_surf = self.font.render(f'score: {self.score}', False, 'white')
+		score_surf = self.font.render(f'score: {self.score}', False, SCORE_COLOR)
 		score_rect = score_surf.get_rect(topleft = (10, -10))
 		window.blit(score_surf, score_rect)
 
