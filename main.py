@@ -1,14 +1,8 @@
 import sys
 import pygame
-from re import X
 
 from config import *
 from game import Game
-from player import Player
-import obstacle
-from alien import Alien, Extra
-from random import choice, randint
-from laser import Laser
 
 if __name__ == '__main__':
 	pygame.init()
