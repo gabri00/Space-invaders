@@ -10,7 +10,9 @@ from random import choice, randint
 from laser import Laser
 
 class Game:
-	def __init__(self):
+	def __init__(self, window):
+		self.window = window
+
 		# Player setup
 		player_sprite = Player((WIDTH / 2, HEIGHT), WIDTH, 5)
 		self.player = pygame.sprite.GroupSingle(player_sprite) # GroupSingle -> contains only one sprite, when a new one is added the last will be deleted
@@ -34,6 +36,12 @@ class Game:
 		self.aliens = pygame.sprite.Group()
 		self.aliens_setup(rows = ALIENS_GRID['rows'], cols = ALIENS_GRID['cols']) # number of alien that we will have
 		self.aliens.speed = ALIENS_SPEED
+		self.alien_direction = 1
+		self.alien_lasers = pygame.sprite.Group()
+
+		#Extra setup
+		self.extra = pygame.sprite.GroupSingle()
+		self.extra_spown_time = randint(40,80)
 
 	def create_obstacle(self, x_start, y_start, offset_x):
 		for i, row in enumerate(self.shape):
@@ -66,13 +74,21 @@ class Game:
 				self.alien_direction = -1
 
 	def alien_move_down(self, dist):
-		pass
+		if self.aliens:
+			for alien in self.aliens.sprites():
+				alien.rect.y += dist
 
 	def alien_shoot(self):
-		pass
+		if self.aliens.sprites():
+			random_alien = choice(self.aliens.sprites())
+			laser_sprite = Laser(random_alien.rect.center, 6, HEIGHT, 'white')
+			self.alien_lasers.add(laser_sprite)
 
 	def extra_alien_timer(self):
-		pass
+		self.extra_spown_time -=1
+		if self.extra_spown_time <= 0:
+			self.extra.add(Extra(choice(['right', 'left']),WIDTH))
+			self.extra_spown_time = randint(400,800)
 
 	def check_collisions(self):
 		#player lasers
@@ -120,12 +136,12 @@ class Game:
 	def display_lives(self):
 		for life in range(self.lives - 1):
 			x = self.life_x_start_pos + (life * (self.life_surf.get_size()[0] + 10))
-			window.blit(self.life_surf, (x, 8))
+			self.window.blit(self.life_surf, (x, 8))
 
 	def display_score(self):
 		score_surf = self.font.render(f'score: {self.score}', False, SCORE_COLOR)
 		score_rect = score_surf.get_rect(topleft = (10, -10))
-		window.blit(score_surf, score_rect)
+		self.window.blit(score_surf, score_rect)
 
 	def run(self):
 		self.player.update()
@@ -137,12 +153,12 @@ class Game:
 		self.extra_alien_timer()
 		self.check_collisions()
 
-		self.player.sprite.lasers.draw(window)
-		self.player.draw(window)
-		self.blocks.draw(window)
-		self.aliens.draw(window)
-		self.alien_lasers.draw(window)
-		self.extra.draw(window)
+		self.player.sprite.lasers.draw(self.window)
+		self.player.draw(self.window)
+		self.blocks.draw(self.window)
+		self.aliens.draw(self.window)
+		self.alien_lasers.draw(self.window)
+		self.extra.draw(self.window)
 
 		self.display_lives()
 		self.display_score()

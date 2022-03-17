@@ -15,17 +15,17 @@ if __name__ == '__main__':
 	window = pygame.display.set_mode((WIDTH, HEIGHT))
 	clock = pygame.time.Clock()
 
-	alien_laser = pygame.USEREVENT + 1
-	pygame.time.set_timer(alien_laser, ALIEN_LASER_RESET_TIME)
+	ALIENLASER = pygame.USEREVENT + 1
+	pygame.time.set_timer(ALIENLASER, ALIEN_LASER_RESET_TIME)
 
-	game = Game(alien_laser)
+	game = Game(window)
 
 	while True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit()
-			if event.type == alien_laser:
+			if event.type == ALIENLASER:
 				game.alien_shoot()
 
 		window.fill(BG_COLOR)
