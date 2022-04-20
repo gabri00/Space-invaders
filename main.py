@@ -18,16 +18,15 @@ def run_neural_network(config_path):
 	population.add_reporter(neat.StdOutReporter(True))	# Prints the best score of the population
 	population.add_reporter(neat.StatisticsReporter())	# Prints the statistics of the population
 
-	# winner = population.run(eval_genomes, 10)	# Runs the population for 10 generations with the specified fitness function
+	winner = population.run(main, 10)	# Runs the population for 10 generations with the specified fitness function
 
-if __name__ == '__main__':
-	neat_config_path = os.path.join(os.path.dirname(__file__), 'neat_config.txt')
-	run_neural_network(neat_config_path)
 
+def main(genomes, config):
 	pygame.init()
+	pygame.display.set_caption('Alien Space Invaders')
 	window = pygame.display.set_mode((WIDTH, HEIGHT))
 	clock = pygame.time.Clock()
-
+	
 	ALIENLASER = pygame.USEREVENT + 1
 	pygame.time.set_timer(ALIENLASER, ALIEN_LASER_RESET_TIME)
 
@@ -47,3 +46,12 @@ if __name__ == '__main__':
 
 		pygame.display.flip()
 		clock.tick(60)
+	
+	# Neural Network
+	for genome_id, genome in genomes:
+		net = neat.nn.FeedForwardNetwork.create(genome, config)
+
+
+if __name__ == '__main__':
+	neat_config_path = os.path.join(os.path.dirname(__file__), 'neat_config.txt')
+	run_neural_network(neat_config_path)
