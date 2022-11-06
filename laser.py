@@ -11,7 +11,7 @@ class Laser(pygame.sprite.Sprite):
 		self.speed = speed
 		self.height_y_constraint = screen_height
 
-	def destroy(self): # destroy when the laser goes off the window
+	def destroy(self):
 		if self.rect.y <= -10 or self.rect.y >= self.height_y_constraint + 50:
 			self.kill()
 
